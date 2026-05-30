@@ -1,0 +1,41 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - DB_PATH=${DB_PATH}
+    volumes:
+      - ./app:/workspace/app
+      - db-data:/data
+    networks:
+      - back-net
+    healthcheck:
+        test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/', timeout=2)"]
+        interval: 5s
+        timeout: 3s
+        retries: 3
+        start_period: 5s
+
+
+  nginx:
+    image: nginx:1.25-alpine
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - front-net
+      - back-net
+    ports:
+      - "8080:80"
+    depends_on:
+      app:
+        condition: service_healthy
+
+
+networks:
+  front-net:
+  back-net:
+
+
+volumes:
+  db-data:
