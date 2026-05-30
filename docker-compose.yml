@@ -11,11 +11,11 @@ services:
     networks:
       - back-net
     healthcheck:
-        test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/', timeout=2)"]
-        interval: 5s
-        timeout: 3s
-        retries: 3
-        start_period: 5s
+         test: ["CMD", "python3", "-c", "import socket; s = socket.socket(); s.connect(('127.0.0.1', 8000))"]
+         interval: 3s
+         timeout: 2s
+         retries: 3
+         start_period: 5s
 
 
   nginx:
